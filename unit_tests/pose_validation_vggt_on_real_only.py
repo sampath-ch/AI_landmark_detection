@@ -71,7 +71,11 @@ def umeyama_alignment(model_points, target_points):
         Vt[-1, :] *= -1
         R = Vt.T @ U.T
 
-    var_m = np.var(model_points, axis=0).sum()
+    # --- CORRECTION IS HERE ---
+    # Old (Wrong): var_m = np.var(model_points, axis=0).sum() 
+    # New (Correct): Sum of squared deviations
+    var_m = np.sum(m_centered ** 2)
+    
     s = np.trace(np.diag(S)) / var_m
     t = mu_t - s * (R @ mu_m)
     return s, R, t
