@@ -6,9 +6,12 @@ import argparse
 import sys
 import os
 import glob
+import time
 import random
 from PIL import Image
 from plyfile import PlyData
+
+start_time = time.perf_counter()
 
 # --- CONFIG ---
 COLMAP_PATH = "/scratch/schettip/landmark_detection/datasets/brandenburg_gate/dense/sparse"
@@ -193,6 +196,12 @@ def main():
     img = colors[0].clamp(0, 1).cpu().numpy()
     imageio.imwrite(args.output, (img*255).astype(np.uint8))
     print(f"🎉 Saved: {args.output}")
+    end_time = time.perf_counter()
+
+    # Calculate and print the duration
+    duration = end_time - start_time
+    print(f"Execution time: {duration:.4f} seconds")
+
 
 if __name__ == "__main__":
     main()
