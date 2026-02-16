@@ -159,7 +159,7 @@ def main():
     
     # Adjustable parameter: How much to lift (in COLMAP units)
     # Start with 0.5 or 1.0. If still foggy, try 2.0.
-    LIFT_AMOUNT = 0.2 
+    LIFT_AMOUNT = 0.0 
     
     camera_up_vector = -R_c2w_final[:, 1] 
     C_final = C_final + (camera_up_vector * LIFT_AMOUNT)
