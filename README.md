@@ -74,6 +74,7 @@ Ensure a CUDA-capable GPU is available. The project uses `torch.bfloat16` optimi
 ### Core Dependencies
 ```bash
 pip install torch torchvision numpy scipy pillow matplotlib gradio imageio
+```bash
 
 Feature Matching
 pip install lightglue
