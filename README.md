@@ -1,0 +1,76 @@
+# AI Landmark Detection & Geometric Forensics
+
+## Introduction
+This repository contains a pipeline for analyzing and authenticating images of famous landmarks (e.g., Brandenburg Gate, Taj Mahal). Given an AI-generated or unverified image, the system estimates its 3D camera pose relative to a real dataset, retrieves or renders a real-world counterpart from that exact viewpoint, and performs rigid geometric forensics using feature matching to detect anomalies.
+
+---
+
+## Table of Contents
+- [Core Pipeline](#core-pipeline)
+- [Project Structure](#project-structure)
+- [Installation & Dependencies](#installation--dependencies)
+- [Usage Guide](#usage-guide)
+- [Methodology](#methodology)
+- [Troubleshooting](#troubleshooting)
+- [Contributors](#contributors)
+- [License](#license)
+
+---
+
+## Core Pipeline
+
+### Camera Pose Estimation
+Uses VGGT (Visual Geometry Grounding Transformer) to predict extrinsic and intrinsic camera parameters of a target image by comparing it to multiple real anchor images from a COLMAP reconstruction.
+
+### Space Alignment
+Aligns the VGGT predicted coordinate system with the real-world coordinate system using Sim3 (Umeyama) alignment.
+
+### Counterpart Generation
+
+#### Retrieval
+`find_closest_real_image_final.py` finds the closest real image using:
+- 3D distance
+- Rotation similarity
+- Field-of-view (FOV)
+- Visual reranking with LightGlue
+
+#### 3D Rendering
+`render_ai_pose_2.py` renders a real-world equivalent view using 3D Gaussian Splatting (gsplat) from the estimated camera pose.
+
+### Interactive Forensics
+`interactive_lightglue_inverse.py` provides a Gradio interface that:
+- Extracts features using SuperPoint
+- Matches features using LightGlue
+- Allows cropping regions to measure pose drift
+- Detects inconsistencies between foreground and background geometry
+
+---
+
+## Project Structure
+
+### Pose Extraction & Alignment
+- `run_ai_pose_extraction.py`, `run_vggt_on_AI_v1.py`: Run VGGT inference against COLMAP anchors and output aligned pose
+- `colmap_io.py`: Custom loader for COLMAP `.bin` files (cameras, images, points3D)
+
+### Counterpart Generation
+- `find_closest_real_image_final.py`: Retrieval pipeline with geometric filtering and visual reranking
+- `render_ai_pose_2.py`, `final_render_vggt.py`: Render novel views using 3D Gaussian Splatting
+
+### Interactive Geometric Forensics (UIs)
+- `interactive_lightglue_inverse.py`: Crop-based feature matching and pose drift visualization
+- `interactive_vggt.py`, `interactive_vggt_simpler.py`: Compare VGGT base drift vs masked drift
+
+### Unit Tests (`unit_tests/`)
+- `pose_validation_vggt_on_real_batch.py`, `pose_validation_vggt_on_real_only.py`: Validate Sim3 alignment and Procrustes correlation
+- `debug_pose_math.py`: Validate rotation matrix conversions
+- `validate_focal_length_pred.py`: Validate focal length predictions
+
+---
+
+## Installation & Dependencies
+
+Ensure a CUDA-capable GPU is available. The project uses `torch.bfloat16` optimizations.
+
+### Core Dependencies
+```bash
+pip install torch torchvision numpy scipy pillow matplotlib gradio imageio
