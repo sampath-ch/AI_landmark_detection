@@ -74,3 +74,90 @@ Ensure a CUDA-capable GPU is available. The project uses `torch.bfloat16` optimi
 ### Core Dependencies
 ```bash
 pip install torch torchvision numpy scipy pillow matplotlib gradio imageio
+
+Feature Matching
+pip install lightglue
+3D Rendering & Geometry
+pip install plyfile
+pip install gsplat
+Optional
+pip install pycolmap
+
+Additional requirements:
+
+VGGT model file (model.pt)
+
+Local COLMAP datasets
+
+3D Gaussian Splatting .ply files
+
+Usage Guide
+1. Retrieve Closest Real Image
+python find_closest_real_image_final.py \
+    --target_img "/path/to/ai_generated_image.jpeg" \
+    --output "retrieved_match.jpg"
+2. Render AI Pose Using 3DGS
+python render_ai_pose_2.py \
+    --target_img "/path/to/ai_generated_image.jpeg" \
+    --ply_path "/path/to/3dgs_point_cloud.ply" \
+    --colmap_path "/path/to/colmap/sparse" \
+    --image_dir "/path/to/colmap/images" \
+    --model_path "/path/to/vggt_model.pt" \
+    --output "final_render.png" \
+    --lift_amount 0.2
+3. Run Interactive Forensics UI
+python interactive_lightglue_inverse.py
+UI Instructions
+
+Upload a real reference image (anchor)
+
+Upload the target image
+
+Select a region using two clicks (bounding box)
+
+Click "Analyze Rigid Geometry"
+
+Inspect feature matches and pose drift results
+
+Methodology
+Anchor Selection
+
+Selects approximately 50 random real images from a COLMAP dataset to create a stable anchor set.
+
+Sim3 Alignment
+
+VGGT outputs poses in an arbitrary coordinate system. Camera centers are aligned to the COLMAP world space using Umeyama alignment to compute:
+
+Scale (s)
+
+Rotation (R)
+
+Translation (t)
+
+FOV-Based Scoring
+
+Retrieval scoring combines:
+
+LightGlue match count
+
+Penalty based on FOV difference
+
+Pose Drift Detection
+
+Rigid structures should maintain consistent geometry. If an AI-generated image mixes inconsistent foreground and background elements:
+
+Cropping foreground vs background leads to different pose estimations
+
+High pose drift indicates geometric inconsistency
+
+Troubleshooting
+
+Ensure CUDA is properly configured for PyTorch
+
+Verify paths to COLMAP datasets and .ply files
+
+Confirm VGGT model file is correctly loaded
+
+If rendering fails, check gsplat installation and compatibility
+
+For poor matches, ensure sufficient overlap between target and dataset images
