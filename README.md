@@ -95,14 +95,14 @@ Local COLMAP datasets
 3D Gaussian Splatting .ply files
 ```
 
-# Usage Guide
-## 1. Retrieve Closest Real Image
+## Usage Guide
+### 1. Retrieve Closest Real Image
 ```bash
 python find_closest_real_image_final.py \
     --target_img "/path/to/ai_generated_image.jpeg" \
     --output "retrieved_match.jpg"
 ```
-## 2. Render AI Pose Using 3DGS
+### 2. Render AI Pose Using 3DGS
 ```bash
 python render_ai_pose_2.py \
     --target_img "/path/to/ai_generated_image.jpeg" \
@@ -113,7 +113,7 @@ python render_ai_pose_2.py \
     --output "final_render.png" \
     --lift_amount 0.2
 ```
-## 3. Run Interactive Forensics UI
+### 3. Run Interactive Forensics UI
 ```bash
 python interactive_lightglue_inverse.py
 ```
